@@ -2,6 +2,11 @@ package victory.engine;
 
 import victory.engine.graphics.*;
 
+/**
+ * Old idea for a tile map.
+ * @author victoria
+ *
+ */
 public class TileMap implements Drawable{
 	int mapMin;
 	int mapMax;

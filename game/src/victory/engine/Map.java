@@ -1,27 +1,20 @@
 package victory.engine;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.Scanner;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import victory.engine.graphics.Screen;
 import victory.engine.graphics.ScreenController;
 import victory.engine.graphics.Sprite;
 import victory.engine.graphics.SpriteSheet;
 
 public class Map implements ScreenController {
-	short[] tilemap; // data
+	short[] tilemap; // data. This array is of shorts instead of bytes because
+						// of a need to keep all tile indices positive. How I
+						// wish java did unsigned data...
 	public final int MAP_WIDTH, MAP_HEIGHT; // dimensions!
 	public final int TILE_WIDTH, TILE_HEIGHT;
 	private final SpriteSheet tileset; // graphics
 	public CollisionMap cmap;
-	private String sheeturl;
-	private String mapurl;
-	// TODO: File I/O
-	private JFileChooser fileInterface; // to load a map
-	private FileFilter fileFilter; // to load a map
 
 	/**
 	 * Generates new Map (with collisions!).
@@ -81,9 +74,8 @@ public class Map implements ScreenController {
 				tilemap[i] = 0x00;
 			} else if (s.hasNext()) {
 				int t = s.nextInt();
-				t = (t < 0x00) ? 0 : t; // keeps tiles in-bounds.
+				t = (t < 0x00) ? 0 : t;
 				t = (t > 0xFF) ? 0 : t;
-				System.out.println(t);
 				tilemap[i] = (short) t;
 			} else {
 				tilemap[i] = 0x00;
@@ -127,9 +119,9 @@ public class Map implements ScreenController {
 		for (int y = 0; y < MAP_HEIGHT; y++) {
 			for (int x = 0; x < MAP_WIDTH; x++) {
 				if (y >= heightmap[x]) {
-					setTile(x, y, (short)0x11);
+					setTile(x, y, (short) 0x11);
 				} else {
-					setTile(x, y, (short)0x00);
+					setTile(x, y, (short) 0x00);
 				}
 			}
 		}

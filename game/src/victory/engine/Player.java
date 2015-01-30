@@ -11,7 +11,6 @@ import victory.engine.KeyStateManager.Button;
  */
 public class Player extends Entity{
 	
-	private static final double	GRAVITY			= 9.8 / 60;
 	private static final int	COUNTER_RESET	= 20;
 	private int					animCounter		= 0;
 	private boolean				flying			= true;
