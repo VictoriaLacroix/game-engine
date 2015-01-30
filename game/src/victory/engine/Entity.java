@@ -76,7 +76,7 @@ public abstract class Entity implements ScreenController{
 	 */
 	public void checkCollision(CollisionMap cmap){
 		/*
-		 * Okay. Bear with me. This is going to be a bit of a long explanation.
+		 * Okay kid, this is where things get complicated.
 		 * 
 		 * First of all, we have to use the x,y values for the next frame to
 		 * determine what the hell is going on, otherwise we'll get weird

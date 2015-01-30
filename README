@@ -1,1 +1,5 @@
 This is going to be really cool.
+
+This game engine is an eclipse project and is best opened using a Git plugin for eclipse. Because it's all Java, it should work out of the box.
+
+(Tested and functional on Win7/Ubuntu/Arch)
