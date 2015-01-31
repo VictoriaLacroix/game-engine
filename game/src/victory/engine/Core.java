@@ -71,7 +71,16 @@ public class Core extends JPanel{
 												// shouldrender is false until it is the time to render the scene.
 												// otherwise, the scene will try its damn-dest to go as fast as possible.
 			ticks++;
-			tick(delta);
+			/*What's being done here is that the delta value will be capped at 1 to prevent collision issues.
+			If the game is rendering below 60fps, it will process the tick before rendering again.
+			This also prevents failures when the game needs to reload quickly from sleep.
+			If the game renders above 60fps, then it will just do a part of a tick, which means that movement should be smoother.
+			In other terms, the game's framerate is totally uncapped, and technically unfloored, but the tickrate is floored at 60tps.
+			*/
+			do{
+				tick((delta >= 1) ? 1d: delta);
+				delta--;
+			}while(delta >= 1);
 			tickCount++;
 			draw();
 			shouldRender = true;
