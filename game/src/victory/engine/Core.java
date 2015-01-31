@@ -62,57 +62,50 @@ public class Core extends JPanel {
 	 * 
 	 * @author Victoria Lacroix #0296738 (Current form)
 	 * @author youtube.com/user/thech3rno (Original single-class form that
-	 *         included really basic software rendering (see screen class))
+	 *         included really basic software rendering (see screen class).
+	 *         About half of the code in this method is his.)
 	 */
 	public void update() {
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / FRAMERATE;
-		int ticks = 0;
-		long lastTimer = System.currentTimeMillis();
+		int ticksThisSecond = 0;
+		long tickTimer = System.currentTimeMillis();
 		double delta = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta = (now - lastTime) / nsPerTick;
 			lastTime = now;
-			boolean shouldRender = isUncapped; // pulls from the 'uncapped'
-												// boolean. if uncapped is
-												// false, then
-												// shouldrender is false until
-												// it is the time to render the
-												// scene.
-												// otherwise, the scene will try
-												// its damn-dest to go as fast
-												// as possible.
-			ticks++;
+			ticksThisSecond++;
 			/*
 			 * What's being done here is that the delta value will be capped at
 			 * 1 to prevent collision issues. If the game is rendering below
-			 * 60fps, it will process the tick before rendering again. This also
-			 * prevents failures when the game needs to reload quickly from
-			 * sleep. If the game renders above 60fps, then it will just do a
-			 * part of a tick, which means that movement should be smoother. In
-			 * other terms, the game's framerate is totally uncapped, and
+			 * 60fps, it will process multiple ticks before rendering again.
+			 * This also prevents failures when the game needs to reload quickly
+			 * from sleep. If the game renders above 60fps, then it will just do
+			 * a part of a tick, which means that movement should be smoother.
+			 * In other terms, the game's framerate is totally uncapped, and
 			 * technically unfloored, but the tickrate is floored at 60tps.
 			 */
 			do {
 				tick((delta >= 1) ? 1d : delta);
+				tickCount++;
 				delta--;
 			} while (delta >= 1);
-			tickCount++;
+			// S/W draw
 			draw();
-			shouldRender = true;
 			try {
 				Thread.sleep(2);
 			} catch (InterruptedException e) {
+				// crash if for some reason we can't thread
 				e.printStackTrace();
 			}
-			if (shouldRender) {
-				render();
-			}
-			if (System.currentTimeMillis() - lastTimer > 1000) {
-				lastTimer += 1000;
-				System.out.println(ticks + " - " + tickCount);
-				ticks = 0;
+			// H/W render
+			render();
+			// Debug print out the amount of frames in the last second.
+			if (System.currentTimeMillis() - tickTimer > 1000) {
+				tickTimer += 1000;
+				System.out.println(ticksThisSecond + " - " + tickCount);
+				ticksThisSecond = 0;
 			}
 		}
 	}

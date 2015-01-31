@@ -10,7 +10,7 @@ import victory.engine.*;
  * @author Victoria Lacroix 
  */
 @SuppressWarnings("serial")
-public class Window extends JFrame implements Runnable{
+public class GameFrame extends JFrame implements Runnable{
 	
 	// important final integers in regards to graphics.
 	private static final int		SCALE				= 2;
@@ -32,7 +32,7 @@ public class Window extends JFrame implements Runnable{
 	/**
 	 * Creates new Game object.
 	 */
-	public Window(){
+	public GameFrame(){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setTitle(GAME_TITLE);
@@ -55,7 +55,7 @@ public class Window extends JFrame implements Runnable{
 	 *            command-line arguments.
 	 */
 	public static void main(String args[]){
-		new Window();
+		new GameFrame();
 	}
 	
 	/**

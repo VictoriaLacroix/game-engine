@@ -19,7 +19,7 @@ public class MapEngine implements ScreenController{
 	 */
 	private double animCounter = 0;
 	/**
-	 * Animation reset. Resets the animation counter if it's equal to or greater than this. 
+	 * Tile animation reset. Resets the animation counter if it's equal to or greater than this. 
 	 */
 	private static final double COUNTER_RESET = 20;
 	

@@ -17,7 +17,7 @@ public class Player extends Entity{
 	private KeyStateManager		input;
 	
 	public Player(double x, double y, KeyStateManager keyManager){
-		super(16, 16, new SpriteSheet("res/sheet0.png"));
+		super(16, 16, new SpriteSheet("res/td-char.png"));
 		sprite.setIndex(0, 0);
 		this.xpos = x;
 		this.ypos = y;
@@ -32,10 +32,10 @@ public class Player extends Entity{
 		}
 		// left/right input
 		if(input.isButtonDown(Button.LEFT) && !input.isButtonDown(Button.RIGHT)){
-			xvel = (input.isButtonDown(Button.R) || flying) ? -2 : -2;
+			xvel = (input.isButtonDown(Button.R) || flying) ? -1 : -2;
 			sprite.setFlipX(true);
 		}else if(input.isButtonDown(Button.RIGHT) && !input.isButtonDown(Button.LEFT)){
-			xvel = (input.isButtonDown(Button.R) || flying) ? 2 : 2;
+			xvel = (input.isButtonDown(Button.R) || flying) ? 1 : 2;
 			sprite.setFlipX(false);
 		}else{
 			xvel = 0;
@@ -47,9 +47,9 @@ public class Player extends Entity{
 			}
 		}else{
 			if(input.isButtonDown(Button.UP) && !input.isButtonDown(Button.DOWN)){
-				yvel = -2;
+				yvel = -1;
 			}else if(input.isButtonDown(Button.DOWN) && !input.isButtonDown(Button.UP)){
-				yvel = 2;
+				yvel = 1;
 			}else{
 				yvel = 0;
 			}
@@ -58,7 +58,7 @@ public class Player extends Entity{
 		// animation counting
 		// walking on ground
 		if(flying){
-			sprite.setIndex(1, 1);
+			sprite.setIndex(1, 0);
 		}else if(xvel != 0 && yvel == 0){
 			animCounter++;
 			if(animCounter < 5){
@@ -68,7 +68,7 @@ public class Player extends Entity{
 			}else if(animCounter < 15){
 				sprite.setIndex(0, 0);
 			}else if(animCounter < 20){
-				sprite.setIndex(2, 0);
+				sprite.setIndex(1, 0);
 			}else if(animCounter == COUNTER_RESET){
 				sprite.setIndex(0, 0);
 				animCounter = 0;
@@ -76,10 +76,10 @@ public class Player extends Entity{
 			// in air
 		}else if(yvel < 0){
 			animCounter = 0;
-			sprite.setIndex(1, 1);
+			sprite.setIndex(1, 0);
 		}else if(yvel > 0){
 			animCounter = 0;
-			sprite.setIndex(2, 1);
+			sprite.setIndex(0, 0);
 			// not moving at all
 		}else if(xvel == 0 && yvel == 0){
 			animCounter = 0;
