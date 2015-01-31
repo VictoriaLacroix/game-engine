@@ -32,10 +32,10 @@ public class Player extends Entity{
 		}
 		// left/right input
 		if(input.isButtonDown(Button.LEFT) && !input.isButtonDown(Button.RIGHT)){
-			xvel = (input.isButtonDown(Button.R) || flying) ? -4 : -2;
+			xvel = (input.isButtonDown(Button.R) || flying) ? -2 : -2;
 			sprite.setFlipX(true);
 		}else if(input.isButtonDown(Button.RIGHT) && !input.isButtonDown(Button.LEFT)){
-			xvel = (input.isButtonDown(Button.R) || flying) ? 4 : 2;
+			xvel = (input.isButtonDown(Button.R) || flying) ? 2 : 2;
 			sprite.setFlipX(false);
 		}else{
 			xvel = 0;
@@ -47,9 +47,9 @@ public class Player extends Entity{
 			}
 		}else{
 			if(input.isButtonDown(Button.UP) && !input.isButtonDown(Button.DOWN)){
-				yvel = -4;
+				yvel = -2;
 			}else if(input.isButtonDown(Button.DOWN) && !input.isButtonDown(Button.UP)){
-				yvel = 4;
+				yvel = 2;
 			}else{
 				yvel = 0;
 			}

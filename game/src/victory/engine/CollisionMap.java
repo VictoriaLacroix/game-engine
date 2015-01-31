@@ -1,5 +1,8 @@
 package victory.engine;
 
+import java.io.File;
+import java.util.Scanner;
+
 /**
  * Conatins data for movement permissions.
  * @author Victoria Lacroix
@@ -11,7 +14,7 @@ public class CollisionMap {
 	boolean[] permissions;
 	
 	/**
-	 * Black constructor, allocates size.
+	 * Blank constructor, allocates size.
 	 * @param w
 	 * @param h
 	 */
@@ -26,13 +29,13 @@ public class CollisionMap {
 	 * Generates a new collisionmap using Map m
 	 * @param m
 	 */
-	public CollisionMap(Map m, boolean d){
+	public CollisionMap(Map m, String url){
 		WIDTH = m.getWidth();
 		HEIGHT = m.getHeight();
 		TILE_WIDTH = m.TILE_WIDTH;
 		TILE_HEIGHT = m.TILE_HEIGHT;
 		permissions = new boolean[WIDTH * HEIGHT];
-		readPermissions(m, d);
+		readPermissions(url);
 	}
 	
 	/**
@@ -60,7 +63,7 @@ public class CollisionMap {
 		x /= TILE_WIDTH;
 		y /= TILE_HEIGHT;
 		if(x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT){
-			return permissions[(int)x + (int)(y * WIDTH)];
+			return !permissions[(int)x + (int)(y * WIDTH)];
 		}
 		return false;
 		
@@ -70,11 +73,23 @@ public class CollisionMap {
 	 * read permissions from a map m
 	 * @param m
 	 */
-	public void readPermissions(Map m, boolean d){
-		for(int j = 0; j < HEIGHT; j++){
-			for(int i = 0; i < WIDTH; i++){
-				//TODO implement collision tables.
-				permissions[i + (j * WIDTH)] = (m.getTile(i, j) == 0x00) ? false: d;
+	public void readPermissions(String url){
+		Scanner s;
+		try{
+			s = new Scanner(new File(url));
+			s.useDelimiter(",|\n|\t| ");
+		}catch(Exception e){
+			s = null;
+		}
+		if(s != null){
+			for(int j = 0; j < HEIGHT; j++){
+				for(int i = 0; i < WIDTH; i++){
+					permissions[i + (j * WIDTH)] = (s.nextInt() == 0) ? false: true;
+				}
+			}
+		}else{
+			for(int i = 0; i < WIDTH*HEIGHT; ++i){
+				permissions[i] = false;
 			}
 		}
 	}

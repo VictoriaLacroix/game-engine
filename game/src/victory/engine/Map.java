@@ -31,7 +31,7 @@ public class Map implements ScreenController {
 		tileset = new SpriteSheet("res/tiles.png");
 		tilemap = new short[w * h];
 		generateMap();
-		cmap = new CollisionMap(this, true);
+		cmap = new CollisionMap(this, null);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class Map implements ScreenController {
 		}
 		load(url);
 		tileset = set;
-		cmap = new CollisionMap(this, false);
+		cmap = new CollisionMap(this, url+".col");
 	}
 
 	/**

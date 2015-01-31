@@ -14,26 +14,33 @@ import victory.engine.graphics.SpriteSheet;
  * @author Victoria Lacroix
  *
  */
-public class Core extends JPanel{
-	
+public class Core extends JPanel {
+
 	// our output
-	private Screen				screen;
+	private Screen screen;
 	// visuals
-	private static final int	FRAMERATE	= 60;	//Target FPS. NOTE: Entity movement is largely dependent on this number. You've been warned.
+	private static final int FRAMERATE = 60; // Target FPS. NOTE: Entity
+												// movement is largely dependent
+												// on this number. You've been
+												// warned.
 	// under-the-hood
-	private boolean				running		= false;
-	private final boolean		isUncapped	= true;	// whether or not FPS is totally uncapped. affects the update() method here.
-	int							width, height;
-	protected static int		tickCount	= 0;
+	private boolean running = false;
+	private final boolean isUncapped = true; // whether or not FPS is totally
+												// uncapped. affects the
+												// update() method here.
+	int width, height;
+	protected static int tickCount = 0;
 	// game-ey stuff
-	KeyStateManager				buttonManager;
-	MapEngine					engine;
-	
-	public Core(int w, int h, int s){
+	KeyStateManager buttonManager;
+	MapEngine engine;
+
+	public Core(int w, int h, int s) {
 		setLayout(new BorderLayout());
 		buttonManager = new KeyStateManager();
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(buttonManager);
-		engine = new MapEngine(w, h, new Map(32, 32, new SpriteSheet("res/world.png"), "res/map/csv/world.csv"));
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(buttonManager);
+		engine = new MapEngine(w, h, new Map(32, 32, new SpriteSheet(
+				"res/world.png"), "res/map/csv/world.csv"));
 		engine.addEntity(new Player(100, 130, buttonManager));
 		width = w;
 		height = h;
@@ -41,94 +48,104 @@ public class Core extends JPanel{
 		add(screen);
 		running = true;
 	}
-	
-	public int getWidth(){
+
+	public int getWidth() {
 		return screen.getSize().width;
 	}
-	
-	public int getHeight(){
+
+	public int getHeight() {
 		return screen.getSize().height;
 	}
-	
+
 	/**
 	 * Update method that is called indefinitely from Window.
 	 * 
 	 * @author Victoria Lacroix #0296738 (Current form)
-	 * @author youtube.com/user/thech3rno (Original single-class form that included really basic software rendering (see screen
-	 *         class))
+	 * @author youtube.com/user/thech3rno (Original single-class form that
+	 *         included really basic software rendering (see screen class))
 	 */
-	public void update(){
+	public void update() {
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / FRAMERATE;
 		int ticks = 0;
 		long lastTimer = System.currentTimeMillis();
 		double delta = 0;
-		while(running){
+		while (running) {
 			long now = System.nanoTime();
 			delta = (now - lastTime) / nsPerTick;
 			lastTime = now;
-			boolean shouldRender = isUncapped; // pulls from the 'uncapped' boolean. if uncapped is false, then
-												// shouldrender is false until it is the time to render the scene.
-												// otherwise, the scene will try its damn-dest to go as fast as possible.
+			boolean shouldRender = isUncapped; // pulls from the 'uncapped'
+												// boolean. if uncapped is
+												// false, then
+												// shouldrender is false until
+												// it is the time to render the
+												// scene.
+												// otherwise, the scene will try
+												// its damn-dest to go as fast
+												// as possible.
 			ticks++;
-			/*What's being done here is that the delta value will be capped at 1 to prevent collision issues.
-			If the game is rendering below 60fps, it will process the tick before rendering again.
-			This also prevents failures when the game needs to reload quickly from sleep.
-			If the game renders above 60fps, then it will just do a part of a tick, which means that movement should be smoother.
-			In other terms, the game's framerate is totally uncapped, and technically unfloored, but the tickrate is floored at 60tps.
-			*/
-			do{
-				tick((delta >= 1) ? 1d: delta);
+			/*
+			 * What's being done here is that the delta value will be capped at
+			 * 1 to prevent collision issues. If the game is rendering below
+			 * 60fps, it will process the tick before rendering again. This also
+			 * prevents failures when the game needs to reload quickly from
+			 * sleep. If the game renders above 60fps, then it will just do a
+			 * part of a tick, which means that movement should be smoother. In
+			 * other terms, the game's framerate is totally uncapped, and
+			 * technically unfloored, but the tickrate is floored at 60tps.
+			 */
+			do {
+				tick((delta >= 1) ? 1d : delta);
 				delta--;
-			}while(delta >= 1);
+			} while (delta >= 1);
 			tickCount++;
 			draw();
 			shouldRender = true;
-			try{
+			try {
 				Thread.sleep(2);
-			}catch(InterruptedException e){
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			if(shouldRender){
+			if (shouldRender) {
 				render();
 			}
-			if(System.currentTimeMillis() - lastTimer > 1000){
+			if (System.currentTimeMillis() - lastTimer > 1000) {
 				lastTimer += 1000;
 				System.out.println(ticks + " - " + tickCount);
 				ticks = 0;
 			}
 		}
 	}
-	
+
 	/**
 	 * Game logic method.
 	 */
-	protected void tick(double delta){
+	protected void tick(double delta) {
 		engine.update(delta);
 		buttonManager.update();
 	}
-	
+
 	/**
 	 * Graphics drawing method.
 	 */
-	protected void draw(){
+	protected void draw() {
 		screen.clear(0x00C0FF);
 		engine.draw(0, 0, screen);
 	}
-	
+
 	/**
 	 * Hardware render method.
 	 */
-	private void render(){
+	private void render() {
 		screen.render();
 	}
-	
+
 	/**
 	 * Shallow return for the Core's Screen object.
 	 * 
 	 * @return this Core's Screen
 	 */
-	protected Screen getScreen(){
+	protected Screen getScreen() {
 		return screen;
 	}
 }
