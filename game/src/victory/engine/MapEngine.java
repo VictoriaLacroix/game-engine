@@ -21,7 +21,7 @@ public class MapEngine implements ScreenController{
 	/**
 	 * Tile animation reset. Resets the animation counter if it's equal to or greater than this. 
 	 */
-	private static final double COUNTER_RESET = 20;
+	private static final double COUNTER_RESET = 30;
 	
 	/**
 	 * Camera Coordinates, used in drawing.

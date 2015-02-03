@@ -25,9 +25,6 @@ public class Core extends JPanel {
 												// warned.
 	// under-the-hood
 	private boolean running = false;
-	private final boolean isUncapped = true; // whether or not FPS is totally
-												// uncapped. affects the
-												// update() method here.
 	int width, height;
 	protected static int tickCount = 0;
 	// game-ey stuff
@@ -68,7 +65,6 @@ public class Core extends JPanel {
 	public void update() {
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / FRAMERATE;
-		int ticksThisSecond = 0;
 		int rendersThisSecond = 0;
 		long tickTimer = System.currentTimeMillis();
 		double delta = 0;
@@ -107,7 +103,6 @@ public class Core extends JPanel {
 			if (System.currentTimeMillis() - tickTimer > 1000) {
 				tickTimer += 1000;
 				System.err.println(rendersThisSecond + "fps");
-				ticksThisSecond = 0;
 				rendersThisSecond = 0;
 			}
 		}

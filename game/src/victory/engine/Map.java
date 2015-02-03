@@ -73,7 +73,12 @@ public class Map implements ScreenController {
 			if (s == null) {
 				tilemap[i] = 0x00;
 			} else if (s.hasNext()) {
-				int t = s.nextInt();
+				int t;
+				try{
+					t = Integer.parseInt(s.next());
+				}catch(Exception e){
+					t = 0x00;
+				}
 				t = (t < 0x00) ? 0 : t;
 				t = (t > 0xFF) ? 0 : t;
 				tilemap[i] = (short) t;

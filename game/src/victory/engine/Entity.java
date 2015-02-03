@@ -45,7 +45,16 @@ public abstract class Entity implements ScreenController{
 	 */
 	protected Sprite		sprite;
 	
-	//protected CollisionMap	collisions;
+	/**
+	 * Character direction.
+	 * 		0-Down
+	 * 		1-Up
+	 * 		2-Left
+	 * 		3-Right
+	 */
+	protected int				direction		= 1;
+	private int					animCounter		= 0;
+	private static final int	COUNTER_RESET	= 30;
 	
 	/**
 	 * New abstract entity with SpriteSheet 'sheet'
@@ -96,14 +105,11 @@ public abstract class Entity implements ScreenController{
 		 * coordinate, one must first ask whether or not the axis corresponds to
 		 * our collision. If we're looking left-right then our x axis
 		 * corresponds to it, otherwise the y axis. You need to add/remove 4
-		 * from the other axis to simulate the octagon shape. Then, for all
-		 * coordinates, (DON'T add .5), and if you're using width/height (right
+		 * from the other axis to simulate the octagon shape.If you're using width/height (right
 		 * side/ bottom), then substract it by one. This shrinks the bounding
 		 * box to prevent java's imperfect double-int conversion from detecting
 		 * the wrong block. Basically, it's an automated rounding. The final
 		 * resulting octagon is a little more inside of the entity than outside.
-		 * This leaves a few problems but nothing that cannot later be
-		 * addressed.
 		 * 
 		 * Collision detection, in some cases, is still a little hoiky. This is
 		 * super-early beta stuff so you shouldn't, like, expect miracles.
@@ -177,6 +183,9 @@ public abstract class Entity implements ScreenController{
 	 * A note on the delta, all velocity values are roughly equal to what the entity will traverse in 1/60th of a second, in pixels.
 	 */
 	public void nextFrame(double delta){
+		sprite.setIndex((animCounter < COUNTER_RESET) ? 0: 1, direction);
+		animCounter += delta;
+		animCounter = (animCounter > 2*COUNTER_RESET) ? animCounter-(2*COUNTER_RESET): animCounter;
 		xposlast = xpos;
 		yposlast = ypos;
 		xvel = xvel > xvelmax ? xvelmax : xvel; // correct larger-than-intended velocities
