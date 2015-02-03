@@ -151,7 +151,7 @@ public class MapEngine implements ScreenController{
 		//Animate the loaded map if we've passed the animation counter.
 		animCounter += delta;
 		if(animCounter >= COUNTER_RESET){
-			animCounter = 0;
+			animCounter -= COUNTER_RESET; //cycle again. We subtract by the reset to make animation smoother.
 			loadedMap.animate();
 		}
 	}

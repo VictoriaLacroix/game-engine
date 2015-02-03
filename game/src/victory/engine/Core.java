@@ -69,13 +69,14 @@ public class Core extends JPanel {
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / FRAMERATE;
 		int ticksThisSecond = 0;
+		int rendersThisSecond = 0;
 		long tickTimer = System.currentTimeMillis();
 		double delta = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta = (now - lastTime) / nsPerTick;
 			lastTime = now;
-			ticksThisSecond++;
+			rendersThisSecond++;
 			/*
 			 * What's being done here is that the delta value will be capped at
 			 * 1 to prevent collision issues. If the game is rendering below
@@ -85,12 +86,13 @@ public class Core extends JPanel {
 			 * a part of a tick, which means that movement should be smoother.
 			 * In other terms, the game's framerate is totally uncapped, and
 			 * technically unfloored, but the tickrate is floored at 60tps.
+			 * 
+			 * Because of how a tick is split, as soon as a frame lasts over a 1/60 of a second, 
 			 */
 			do {
-				tick((delta >= 1) ? 1d : delta);
-				tickCount++;
+				tick((delta >= 1d) ? 1d : delta);
 				delta--;
-			} while (delta >= 1);
+			} while (delta > 0);
 			// S/W draw
 			draw();
 			try {
@@ -104,8 +106,9 @@ public class Core extends JPanel {
 			// Debug print out the amount of frames in the last second.
 			if (System.currentTimeMillis() - tickTimer > 1000) {
 				tickTimer += 1000;
-				System.out.println(ticksThisSecond + " - " + tickCount);
+				System.err.println(rendersThisSecond + "fps");
 				ticksThisSecond = 0;
+				rendersThisSecond = 0;
 			}
 		}
 	}
