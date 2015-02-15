@@ -65,7 +65,7 @@ public class Map implements ScreenController {
 	public void load(String url) {
 		Scanner s;
 		try {
-			s = new Scanner(new File(url)).useDelimiter(",|\n|\t| ");
+			s = new Scanner(new File(url)).useDelimiter(",|\n|\t|\r|\f| ");
 		} catch (Exception e) {
 			s = null;
 		}

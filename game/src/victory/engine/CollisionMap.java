@@ -77,7 +77,7 @@ public class CollisionMap {
 		Scanner s;
 		try{
 			s = new Scanner(new File(url));
-			s.useDelimiter(",|\n|\t| ");
+			s.useDelimiter(",|\n|\t|\r|\f| ");
 		}catch(Exception e){
 			s = null;
 		}

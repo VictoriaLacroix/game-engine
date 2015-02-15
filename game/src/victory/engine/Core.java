@@ -101,7 +101,7 @@ public class Core extends JPanel {
 			render();
 			// Debug print out the amount of frames in the last second.
 			if (System.currentTimeMillis() - tickTimer > 1000) {
-				tickTimer += 1000;
+				tickTimer += 1000; 
 				System.err.println(rendersThisSecond + "fps");
 				rendersThisSecond = 0;
 			}
