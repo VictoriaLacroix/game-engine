@@ -10,8 +10,7 @@ public class Sprite implements ScreenController{
 	private int indX, indY; // xy index
 	private final int tileX, tileY; // how many tiles horizontally, vertically.
 	private final int width, height; // width of the image in question.
-	private boolean flipX, flipY; // horizontal/vertical flipping.
-	private final int MASK = 0xFFFF00FF;
+	private int mask = 0xFFFF00FF;
 	
 	public Sprite(int w, int h, SpriteSheet spritesheet){
 		sheet = spritesheet;
@@ -52,51 +51,8 @@ public class Sprite implements ScreenController{
 		return indY;
 	}
 	
-	/**
-	 * 
-	 * @return whether the sprite is to be flipped horizontally. good way to store direction.
-	 */
-	public boolean getFlipX(){
-		return flipX;
-	}
-	
-	/**
-	 * 
-	 * @param fx whether to flip or not.
-	 */
-	public void setFlipX(boolean fx){
-		flipX = fx;
-	}
-	
-	/**
-	 * 
-	 * @return whether the sprite is to be flipped vertically
-	 */
-	public boolean getFlipY(){
-		return flipY;
-	}
-	
-	/**
-	 * 
-	 * @param fy whether to flip or not
-	 */
-	public void setFlipY(boolean fy){
-		flipY = fy;
-	}
-	
 	@Override
 	public void draw(int sx, int sy, Screen s){
-		for(int j = 0; j < height; j++){
-			for(int i = 0; i < width; i++){
-				if(sheet.getPixel(i + (indX * width), (j + (indY * height))) != MASK){
-					if(!flipX){
-						s.writePixel(i + sx, j + sy, sheet.getPixel((i + (indX * width)), (j + (indY * height))));
-					}else{
-						s.writePixel(sx + ((width - i)-1), j + sy, sheet.getPixel((i + (indX * width)),
-								(j + (indY * height))));
-					}
-				}
-			}
-		}
+		sheet.draw(sx, sy, indX*width, indY*height, width, height, mask, s);
 	}
 }

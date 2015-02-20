@@ -109,7 +109,7 @@ public class MapEngine implements ScreenController{
 	 *            entity at index i
 	 */
 	public void attachCamera(int i){
-		if(i < manyEntities){
+		if(i >= 0 && i < manyEntities){
 			cameraman = entities[i];
 		}
 	}
@@ -168,7 +168,7 @@ public class MapEngine implements ScreenController{
 		for(int i = 0; i < manyEntities; ++i){
 			for(int j = 0; j < manyEntities; ++j){
 				if(i != j){
-					if(entities[i].collidedWith(entities[j])){
+					if(entities[i].isCollidedWith(entities[j])){
 						entities[i].onCollide(entities[j]);
 					}
 				}

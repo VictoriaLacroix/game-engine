@@ -30,6 +30,11 @@ public abstract class Entity implements ScreenController{
 	protected double	xvelmax, yvelmax;
 	
 	/**
+	 * Axis acceleration
+	 */
+	protected double	xacc, yacc;
+	
+	/**
 	 * Dimensions (Size)
 	 */
 	protected int		width, height;
@@ -38,12 +43,11 @@ public abstract class Entity implements ScreenController{
 	 * Gravity for this entity.
 	 */
 	protected double	gravity = 9.8/60;
-	protected boolean	gravitating;
 	
 	/**
 	 * Current graphic setting
 	 */
-	protected Sprite		sprite;
+	protected Sprite	sprite;
 	
 	/**
 	 * Character direction.
@@ -54,7 +58,7 @@ public abstract class Entity implements ScreenController{
 	 */
 	protected int				direction		= 1;
 	private int					animCounter		= 0;
-	private static final int	COUNTER_RESET	= 30;
+	private static final int	COUNTER_RESET	= 10;
 	
 	/**
 	 * New abstract entity with SpriteSheet 'sheet'
@@ -68,7 +72,6 @@ public abstract class Entity implements ScreenController{
 		yvelmax = 12;
 		width = w;
 		height = h;
-		gravitating = true;
 		sprite = new Sprite(w, h, sheet);
 	}
 	
@@ -188,13 +191,14 @@ public abstract class Entity implements ScreenController{
 		animCounter = (animCounter > 2*COUNTER_RESET) ? animCounter-(2*COUNTER_RESET): animCounter;
 		xposlast = xpos;
 		yposlast = ypos;
+		xvel += xacc*delta;
+		yvel += yacc*delta;
 		xvel = xvel > xvelmax ? xvelmax : xvel; // correct larger-than-intended velocities
 		yvel = yvel > yvelmax ? yvelmax : yvel;
 		xvel = -xvel > xvelmax ? -xvelmax : xvel; // negative case
 		yvel = -yvel > yvelmax ? -yvelmax : yvel;
 		xpos += xvel*delta;
 		ypos += yvel*delta;
-		if(gravitating) yvel += gravity*delta; //add gravity to the velocity. this is applied after movement in order to factor in the next frame.
 	}
 	
 	/**
@@ -204,7 +208,7 @@ public abstract class Entity implements ScreenController{
 	 */
 	public abstract void onCollide(Entity other);
 	
-	public boolean collidedWith(Entity other){
+	public boolean isCollidedWith(Entity other){
 		// step1
 		if(xpos >= other.xpos && xpos < other.xpos + other.width && ypos >= other.ypos && ypos < other.ypos + other.height){
 			return true;

@@ -30,6 +30,7 @@ public class Core extends JPanel {
 	// game-ey stuff
 	KeyStateManager buttonManager;
 	MapEngine engine;
+	Window winblows;
 
 	public Core(int w, int h, int s) {
 		setLayout(new BorderLayout());
@@ -39,6 +40,8 @@ public class Core extends JPanel {
 		engine = new MapEngine(w, h, new Map(32, 32, new SpriteSheet(
 				"res/world.png"), "res/map/csv/world.csv"));
 		engine.addEntity(new Player(100, 130, buttonManager));
+		winblows = new Window(40, 8);
+		winblows.write("Here is my string.\nIt is in a window. Holy shit.\nThis is cool.\nThis is fucking cool.\n\nProgramming is fun.");
 		width = w;
 		height = h;
 		screen = new Screen(w, h, s);
@@ -77,13 +80,11 @@ public class Core extends JPanel {
 			 * What's being done here is that the delta value will be capped at
 			 * 1 to prevent collision issues. If the game is rendering below
 			 * 60fps, it will process multiple ticks before rendering again.
-			 * This also prevents failures when the game needs to reload quickly
+			 * This also prevents collision failures when the game needs to reload quickly
 			 * from sleep. If the game renders above 60fps, then it will just do
 			 * a part of a tick, which means that movement should be smoother.
-			 * In other terms, the game's framerate is totally uncapped, and
+			 * In other terms, the game's framerate is essentially uncapped, and
 			 * technically unfloored, but the tickrate is floored at 60tps.
-			 * 
-			 * Because of how a tick is split, as soon as a frame lasts over a 1/60 of a second, 
 			 */
 			do {
 				tick((delta >= 1d) ? 1d : delta);
@@ -120,8 +121,9 @@ public class Core extends JPanel {
 	 * Graphics drawing method.
 	 */
 	protected void draw() {
-		screen.clear(0x00C0FF);
+		//screen.clear(0x00C0FF);
 		engine.draw(0, 0, screen);
+		winblows.draw(0, 0, screen);
 	}
 
 	/**

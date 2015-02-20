@@ -11,9 +11,6 @@ import victory.engine.KeyStateManager.Button;
  */
 public class Player extends Entity{
 	
-	
-	private boolean				flying			= true;
-	
 	private KeyStateManager		input;
 	
 	public Player(double x, double y, KeyStateManager keyManager){
@@ -22,7 +19,6 @@ public class Player extends Entity{
 		this.xpos = x;
 		this.ypos = y;
 		input = keyManager;
-		gravitating = false;
 	}
 	
 	@Override

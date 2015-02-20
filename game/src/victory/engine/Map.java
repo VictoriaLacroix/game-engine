@@ -2,6 +2,7 @@ package victory.engine;
 
 import java.io.File;
 import java.util.Scanner;
+
 import victory.engine.graphics.Screen;
 import victory.engine.graphics.ScreenController;
 import victory.engine.graphics.Sprite;
@@ -11,9 +12,9 @@ public class Map implements ScreenController {
 	short[] tilemap; // data. This array is of shorts instead of bytes because
 						// of a need to keep all tile indices positive. How I
 						// wish java did unsigned data...
-	public final int MAP_WIDTH, MAP_HEIGHT; // dimensions!
+	public final int MAP_WIDTH, MAP_HEIGHT;
 	public final int TILE_WIDTH, TILE_HEIGHT;
-	private final SpriteSheet tileset; // graphics
+	private final SpriteSheet tileset;
 	public CollisionMap cmap;
 
 	/**
@@ -258,8 +259,8 @@ public class Map implements ScreenController {
 	@Override
 	public void draw(int sx, int sy, Screen s) {
 		Sprite drawSprite = new Sprite(16, 16, tileset);
-		for (int y = 0; y < MAP_HEIGHT; y++) {
-			for (int x = 0; x < MAP_WIDTH; x++) {
+		for (int y = (-sy/16); y < MAP_HEIGHT; y++) {
+			for (int x = (-sx/16); x < MAP_WIDTH; x++) {
 				if ((x * TILE_WIDTH) + sx >= -TILE_WIDTH
 						&& (x * TILE_WIDTH) + sx < s.getScreenWidth()
 						&& (y * TILE_HEIGHT) + sy >= -TILE_HEIGHT
@@ -267,9 +268,11 @@ public class Map implements ScreenController {
 					drawSprite.setIndex(tilemap[x + (MAP_WIDTH * y)]
 							% TILE_WIDTH, tilemap[x + (MAP_WIDTH * y)]
 							/ TILE_HEIGHT);
-					drawSprite.draw(sx + (x * 16), sy + (y * 16), s);
+					drawSprite.draw(sx + (x * TILE_WIDTH), sy + (y * TILE_HEIGHT), s);
 				}
+				if(x * TILE_WIDTH + sx > s.getScreenWidth()) break;
 			}
+			if(y * TILE_HEIGHT + sy > s.getScreenHeight()) break;
 		}
 	}
 }

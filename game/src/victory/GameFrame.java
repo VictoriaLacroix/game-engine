@@ -14,7 +14,8 @@ public class GameFrame extends JFrame implements Runnable{
 	
 	// important final integers in regards to graphics.
 	private static final int		SCALE				= 2;
-	private static final int		GAME_SCREEN_WIDTH	= 320, GAME_SCREEN_HEIGHT = 240;
+	private static final int		GAME_SCREEN_WIDTH	= 320,
+									GAME_SCREEN_HEIGHT	= 240;
 	private static final String		GAME_TITLE			= "Victory Engine 0.0.1b";
 	/**
 	 * Game logic.
