@@ -1,4 +1,4 @@
-package victory.engine;
+package victory.engine.input;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;

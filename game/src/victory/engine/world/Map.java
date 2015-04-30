@@ -1,4 +1,4 @@
-package victory.engine;
+package victory.engine.world;
 
 import java.io.File;
 import java.util.Scanner;

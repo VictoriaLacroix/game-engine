@@ -7,56 +7,62 @@ import javax.swing.*;
 
 import victory.engine.graphics.Screen;
 import victory.engine.graphics.SpriteSheet;
+import victory.engine.input.KeyStateManager;
+import victory.engine.world.Map;
+import victory.engine.world.MapEngine;
+import victory.engine.world.Player;
 
 @SuppressWarnings("serial")
 /**
- * Core class that performs the main logic in a game. It handles timings for graphics drawings, and calls various update() methods for different objects.
+ * Core class that performs the main logic in a game. It handles timings for graphics drawings, and calls various update() methods for different objects. It also handles windowing in a game.
  * @author Victoria Lacroix
  *
  */
-public class Core extends JPanel {
-
+public class Core extends JPanel{
+	
 	// our output
-	private Screen screen;
+	private Screen				screen;
 	// visuals
-	private static final int FRAMERATE = 60; // Target FPS. NOTE: Entity
-												// movement is largely dependent
-												// on this number. You've been
-												// warned.
+	private static final int	FRAMERATE	= 60;	// Target FPS. NOTE: Entity
+													// movement is largely dependent
+													// on this number. You've been
+													// warned.
+	
 	// under-the-hood
-	private boolean running = false;
-	int width, height;
-	protected static int tickCount = 0;
+	private boolean				running		= false;
+	int							width, height;
+	protected static int		tickCount	= 0;
 	// game-ey stuff
-	KeyStateManager buttonManager;
-	MapEngine engine;
-	Window winblows;
-
-	public Core(int w, int h, int s) {
+	private KeyStateManager		buttonManager;
+	private BaseEngine			engine;
+	
+	public Core(int w, int h, int s){
 		setLayout(new BorderLayout());
 		buttonManager = new KeyStateManager();
-		KeyboardFocusManager.getCurrentKeyboardFocusManager()
-				.addKeyEventDispatcher(buttonManager);
-		engine = new MapEngine(w, h, new Map(32, 32, new SpriteSheet(
-				"res/world.png"), "res/map/csv/world.csv"));
-		engine.addEntity(new Player(100, 130, buttonManager));
-		winblows = new Window(40, 8);
-		winblows.write("Here is my string.\nIt is in a window. Holy shit.\nThis is cool.\nThis is fucking cool.\n\nProgramming is fun.");
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(buttonManager);
 		width = w;
 		height = h;
 		screen = new Screen(w, h, s);
 		add(screen);
+		
+		BaseEngine.init(w, h);
+		
+		MapEngine me = new MapEngine(w, h, new Map(32, 32, new SpriteSheet("res/world.png"), "res/map/csv/world.csv"));
+		me.addEntity(new Player(128, 128));
+		me.attachInput(0);
+		BaseEngine.addTangible(me);
+		
 		running = true;
 	}
-
-	public int getWidth() {
+	
+	public int getWidth(){
 		return screen.getSize().width;
 	}
-
-	public int getHeight() {
+	
+	public int getHeight(){
 		return screen.getSize().height;
 	}
-
+	
 	/**
 	 * Update method that is called indefinitely from Window.
 	 * 
@@ -65,13 +71,13 @@ public class Core extends JPanel {
 	 *         included really basic software rendering (see screen class).
 	 *         About half of the code in this method is his.)
 	 */
-	public void update() {
+	public void update(){
 		long lastTime = System.nanoTime();
 		double nsPerTick = 1000000000D / FRAMERATE;
 		int rendersThisSecond = 0;
 		long tickTimer = System.currentTimeMillis();
 		double delta = 0;
-		while (running) {
+		while(running){
 			long now = System.nanoTime();
 			delta = (now - lastTime) / nsPerTick;
 			lastTime = now;
@@ -86,59 +92,58 @@ public class Core extends JPanel {
 			 * In other terms, the game's framerate is essentially uncapped, and
 			 * technically unfloored, but the tickrate is floored at 60tps.
 			 */
-			do {
+			do{
 				tick((delta >= 1d) ? 1d : delta);
 				delta--;
-			} while (delta > 0);
+			}while(delta > 0);
 			// S/W draw
 			draw();
-			try {
+			try{
 				Thread.sleep(2);
-			} catch (InterruptedException e) {
+			}catch(InterruptedException e){
 				// crash if for some reason we can't thread
 				e.printStackTrace();
 			}
 			// H/W render
 			render();
 			// Debug print out the amount of frames in the last second.
-			if (System.currentTimeMillis() - tickTimer > 1000) {
-				tickTimer += 1000; 
+			if(System.currentTimeMillis() - tickTimer > 1000){
+				tickTimer += 1000;
 				System.err.println(rendersThisSecond + "fps");
 				rendersThisSecond = 0;
 			}
 		}
 	}
-
+	
 	/**
 	 * Game logic method.
 	 */
-	protected void tick(double delta) {
-		engine.update(delta);
+	protected void tick(double delta){
+		BaseEngine.control(buttonManager);
+		BaseEngine.update(delta);
 		buttonManager.update();
 	}
-
+	
 	/**
 	 * Graphics drawing method.
 	 */
-	protected void draw() {
-		//screen.clear(0x00C0FF);
-		engine.draw(0, 0, screen);
-		winblows.draw(0, 0, screen);
+	protected void draw(){
+		BaseEngine.draw(0, 0, screen);
 	}
-
+	
 	/**
 	 * Hardware render method.
 	 */
-	private void render() {
+	private void render(){
 		screen.render();
 	}
-
+	
 	/**
 	 * Shallow return for the Core's Screen object.
 	 * 
 	 * @return this Core's Screen
 	 */
-	protected Screen getScreen() {
+	protected Screen getScreen(){
 		return screen;
 	}
 }

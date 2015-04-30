@@ -1,7 +1,11 @@
-package victory.engine;
+package victory.engine.world;
 
+import victory.engine.Tangible;
+import victory.engine.Window;
+import victory.engine.Menu;
+import victory.engine.battle.BattleScene;
 import victory.engine.graphics.Screen;
-import victory.engine.graphics.ScreenController;
+import victory.engine.input.KeyStateManager;
 
 /**
  * Map Engine that handles map logic and logic for the entities that inhabit it.
@@ -9,7 +13,7 @@ import victory.engine.graphics.ScreenController;
  * @author Victoria Lacroix
  * 
  */
-public class MapEngine implements ScreenController{
+public class MapEngine implements Tangible{
 	
 	public final int	TILE_WIDTH, TILE_HEIGHT;
 	public final int	SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -30,7 +34,10 @@ public class MapEngine implements ScreenController{
 	/**
 	 * The entity that the camera is attached to.
 	 */
-	private Entity		cameraman;
+	private Entity	cameraman;
+	
+	private Entity	director;
+	
 	/**
 	 * A list of entities on the map.
 	 */
@@ -40,7 +47,7 @@ public class MapEngine implements ScreenController{
 	 */
 	private int			manyEntities	= 0;
 	/**
-	 * Points to the map that is laoded in memory,
+	 * Points to the map that is loaded in memory,
 	 */
 	private Map			loadedMap;
 	
@@ -56,6 +63,7 @@ public class MapEngine implements ScreenController{
 		camY = 0;
 		
 		entities = new Entity[32];
+		
 		
 		loadedMap = startmap;
 	}
@@ -115,18 +123,29 @@ public class MapEngine implements ScreenController{
 	}
 	
 	/**
+	 * Attaches control of the game to this entity.
+	 */
+	public void attachInput(int i){
+		if(i >= 0 && i < manyEntities){
+			director = entities[i];
+		}
+	}
+	
+	/**
 	 * Updates the entities logic, then collision, and then algorithms (velocity
 	 * etc).
 	 */
 	public void update(double delta){
+		// Logic, animation of entities.
 		for(int i = 0; i < entities.length; i++){
 			if(entities[i] != null){
-				entities[i].update();
+				entities[i].update(delta);
 			}
 		}
 		
 		handleCollision();
 		
+		// Physics update of entities
 		for(int i = 0; i < entities.length; i++){
 			if(entities[i] != null){
 				entities[i].nextFrame(delta);
@@ -157,6 +176,20 @@ public class MapEngine implements ScreenController{
 	}
 	
 	/**
+	 * Update velocities for the entity in control.
+	 * @param buttonManager where to buttons from
+	 */
+	public int control(KeyStateManager buttonManager){
+		int result = -1;
+		if(director != null) result = director.control(buttonManager);
+		switch(result){
+			case -1: break;
+			case 1: Window win = new Window(0, 0, 40, 4); win.queue("Test String."); ;
+		}
+		return -1;
+	}
+	
+	/**
 	 * Handles the collision of all entities within eachother.
 	 */
 	public void handleCollision(){
@@ -181,6 +214,11 @@ public class MapEngine implements ScreenController{
 		loadedMap.draw(-camX, -camY, s);
 		for(int i = 0; i < manyEntities; i++){
 			entities[i].draw((int)entities[i].getX() - camX, (int)entities[i].getY() - camY, s);
+		}
+		
+		// Draw our director if they are an instance of ScreenController.
+		if(!(director instanceof Entity) && director instanceof Tangible){
+			((Tangible)director).draw(0,0,s);
 		}
 	}
 }

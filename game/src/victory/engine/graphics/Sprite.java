@@ -1,5 +1,7 @@
 package victory.engine.graphics;
 
+import victory.engine.input.KeyStateManager;
+
 /**
  * An instance-based wrapper for the spritesheet class.
  * @author Victoria Lacroix

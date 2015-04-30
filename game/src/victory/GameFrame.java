@@ -21,14 +21,6 @@ public class GameFrame extends JFrame implements Runnable{
 	 * Game logic.
 	 */
 	private Core					g					= new Core(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT, SCALE);
-	/**
-	 * Java's built-in for keyboard input.
-	 */
-	private KeyboardFocusManager	keyManager;
-	/**
-	 * Engine specific implementation to simplify key handling for a player.
-	 */
-	private KeyStateManager			buttonManager;
 	
 	/**
 	 * Creates new Game object.
@@ -39,9 +31,6 @@ public class GameFrame extends JFrame implements Runnable{
 		setTitle(GAME_TITLE);
 		// screen component
 		add(g, BorderLayout.CENTER);
-		keyManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		buttonManager = new KeyStateManager();
-		keyManager.addKeyEventDispatcher(buttonManager);
 		pack();
 		setResizable(true);
 		setLocationRelativeTo(null);

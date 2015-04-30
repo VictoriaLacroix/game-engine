@@ -1,9 +1,15 @@
-package victory.engine;
+package victory.engine.world;
 
+import victory.engine.Core;
+import victory.engine.BaseEngine;
+import victory.engine.Tangible;
+import victory.engine.Menu;
+import victory.engine.Window;
 import victory.engine.graphics.Screen;
-import victory.engine.graphics.ScreenController;
 import victory.engine.graphics.Sprite;
 import victory.engine.graphics.SpriteSheet;
+import victory.engine.input.KeyStateManager;
+import victory.engine.input.KeyStateManager.Button;
 
 /**
  * An abstract class to describe an entity.
@@ -11,43 +17,43 @@ import victory.engine.graphics.SpriteSheet;
  * @author Victoria Lacroix
  *
  */
-public abstract class Entity implements ScreenController{
+public abstract class Entity{
 	
 	/**
 	 * Axis Coordinate
 	 */
-	protected double	xpos, ypos;
-	protected double	xposlast, yposlast;
+	protected double			xpos, ypos;
+	protected double			xposlast, yposlast;
 	
 	/**
 	 * Axis Velocity
 	 */
-	protected double	xvel, yvel;
+	protected double			xvel, yvel;
 	
 	/**
 	 * Axis Velocity Cap
 	 */
-	protected double	xvelmax, yvelmax;
+	protected double			xvelmax, yvelmax;
 	
 	/**
 	 * Axis acceleration
 	 */
-	protected double	xacc, yacc;
+	protected double			xacc, yacc;
 	
 	/**
 	 * Dimensions (Size)
 	 */
-	protected int		width, height;
+	protected int				width, height;
 	
 	/**
 	 * Gravity for this entity.
 	 */
-	protected double	gravity = 9.8/60;
+	protected double			gravity			= 9.8 / 60;
 	
 	/**
 	 * Current graphic setting
 	 */
-	protected Sprite	sprite;
+	protected Sprite			sprite;
 	
 	/**
 	 * Character direction.
@@ -57,8 +63,9 @@ public abstract class Entity implements ScreenController{
 	 * 		3-Right
 	 */
 	protected int				direction		= 1;
-	private int					animCounter		= 0;
-	private static final int	COUNTER_RESET	= 10;
+	private double				animCounter		= 0;
+	private int					step			= 0;
+	private static final int	COUNTER_RESET	= 25;
 	
 	/**
 	 * New abstract entity with SpriteSheet 'sheet'
@@ -75,10 +82,37 @@ public abstract class Entity implements ScreenController{
 		sprite = new Sprite(w, h, sheet);
 	}
 	
-	/**
-	 * Logic method, to be implemented by subclass.
-	 */
-	public abstract void update();
+	public abstract void update(double delta);
+	
+	public int control(KeyStateManager input){
+		if(input.isButtonDown(Button.DOWN) && !input.isButtonDown(Button.UP)){
+			yvel = 1;
+			direction = 0;
+		}else if(input.isButtonDown(Button.UP)
+				&& !input.isButtonDown(Button.DOWN)){
+			yvel = -1;
+			direction = 1;
+		}else{
+			yvel = 0;
+		}
+		if(input.isButtonDown(Button.LEFT) && !input.isButtonDown(Button.RIGHT)){
+			xvel = -1;
+			direction = 2;
+		}else if(input.isButtonDown(Button.RIGHT)
+				&& !input.isButtonDown(Button.LEFT)){
+			xvel = 1;
+			direction = 3;
+		}else{
+			xvel = 0;
+		}
+		
+		if(input.wasButtonPressed(Button.START)){
+			Window w = new Window(0, 0, 40, 6);
+			w.queue("This is text on a window. When it gets really fucking hot, it'll shut off before any damage is done. Probably.");
+			BaseEngine.focusTangible(w);
+		}
+		return -1;
+	}
 	
 	/**
 	 * Collision detection/reaction method for tilemaps/collisionmaps.
@@ -118,16 +152,18 @@ public abstract class Entity implements ScreenController{
 		 * super-early beta stuff so you shouldn't, like, expect miracles.
 		 */
 		
-		// First, we check to see if a full side is collided by going && for our
-		// two points.
+		// First off, we look at grouped points representing the full collided side. This should take care of high-velocity collisions.
 		
 		// Vertical collision (top/bottom)
-		if(cmap.getAt(xpos + xvel + 4, ypos + yvel + height - 1) && cmap.getAt(xpos + xvel + width - 1 - 4, ypos + yvel + height - 1)){
+		if(cmap.getAt(xpos + xvel + 4, ypos + yvel + height - 1)
+				&& cmap.getAt(xpos + xvel + width - 1 - 4, ypos + yvel + height
+						- 1)){
 			// bottom
 			ypos += yvel;
 			ypos -= ypos % height;
 			yvel = (yvel > 0) ? 0 : yvel;
-		}else if((cmap.getAt((xpos) + xvel + 4, (ypos) + yvel) && cmap.getAt((xpos) + xvel + (width - 1) - 4, (ypos) + yvel))){
+		}else if((cmap.getAt((xpos) + xvel + 4, (ypos) + yvel) && cmap.getAt(
+				(xpos) + xvel + (width - 1) - 4, (ypos) + yvel))){
 			// top
 			if(yvel < 0){
 				ypos += yvel; // change position
@@ -138,28 +174,33 @@ public abstract class Entity implements ScreenController{
 		}
 		
 		// horizontal collision (left/right)
-		if((cmap.getAt((xpos) + xvel, (ypos) + yvel + 4) && cmap.getAt((xpos) + xvel, (ypos) + yvel + (height - 1) - 4))){
+		if((cmap.getAt((xpos) + xvel, (ypos) + yvel + 4) && cmap.getAt((xpos)
+				+ xvel, (ypos) + yvel + (height - 1) - 4))){
 			// left
 			xpos += xvel;
 			xpos += width - (xpos % width);
 			xvel = (xvel < 0) ? 0 : xvel;
-		}else if((cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + 4) && cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + (height - 1) - 4))){
+		}else if((cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + 4) && cmap
+				.getAt((xpos) + xvel + (width - 1), (ypos) + yvel
+						+ (height - 1) - 4))){
 			// right
 			xpos += xvel;
 			xpos -= xpos % width;
 			xvel = (xvel > 0) ? 0 : xvel;
 		}
 		
-		// Then we check that our side has partially collided by going "OR" for
-		// our two points instead of "AND".
+		// Here, we check weak collision (single points instead of grouped points). This take care of low-velocity collisions.
 		
 		// Vertical collision (top/bottom)
-		if(cmap.getAt(xpos + xvel + 4, ypos + yvel + height - 1) || cmap.getAt(xpos + xvel + width - 1 - 4, ypos + yvel + height - 1)){
+		if(cmap.getAt(xpos + xvel + 4, ypos + yvel + height - 1)
+				|| cmap.getAt(xpos + xvel + width - 1 - 4, ypos + yvel + height
+						- 1)){
 			// bottom
 			ypos += yvel;
 			ypos -= ypos % height;
 			yvel = (yvel > 0) ? 0 : yvel;
-		}else if((cmap.getAt((xpos) + xvel + 4, (ypos) + yvel) || cmap.getAt((xpos) + xvel + (width - 1) - 4, (ypos) + yvel))){
+		}else if((cmap.getAt((xpos) + xvel + 4, (ypos) + yvel) || cmap.getAt(
+				(xpos) + xvel + (width - 1) - 4, (ypos) + yvel))){
 			// top
 			ypos += yvel; // change position
 			ypos += height - (ypos % height);
@@ -167,12 +208,15 @@ public abstract class Entity implements ScreenController{
 		}
 		
 		// horizontal collision (left/right)
-		if((cmap.getAt((xpos) + xvel, (ypos) + yvel + 4) || cmap.getAt((xpos) + xvel, (ypos) + yvel + (height - 1) - 4))){
+		if((cmap.getAt((xpos) + xvel, (ypos) + yvel + 4) || cmap.getAt((xpos)
+				+ xvel, (ypos) + yvel + (height - 1) - 4))){
 			// left
 			xpos += xvel;
 			xpos += width - (xpos % width);
 			xvel = (xvel < 0) ? 0 : xvel;
-		}else if((cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + 4) || cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + (height - 1) - 4))){
+		}else if((cmap.getAt((xpos) + xvel + (width - 1), (ypos) + yvel + 4) || cmap
+				.getAt((xpos) + xvel + (width - 1), (ypos) + yvel
+						+ (height - 1) - 4))){
 			// right
 			xpos += xvel;
 			xpos -= xpos % width;
@@ -185,20 +229,23 @@ public abstract class Entity implements ScreenController{
 	 * 
 	 * A note on the delta, all velocity values are roughly equal to what the entity will traverse in 1/60th of a second, in pixels.
 	 */
-	public void nextFrame(double delta){
-		sprite.setIndex((animCounter < COUNTER_RESET) ? 0: 1, direction);
+	public final void nextFrame(double delta){
 		animCounter += delta;
-		animCounter = (animCounter > 2*COUNTER_RESET) ? animCounter-(2*COUNTER_RESET): animCounter;
+		if(animCounter >= COUNTER_RESET){
+			step = (step == 0) ? 1 : 0;
+			animCounter -= COUNTER_RESET;
+		}
+		sprite.setIndex(step, direction);
 		xposlast = xpos;
 		yposlast = ypos;
-		xvel += xacc*delta;
-		yvel += yacc*delta;
+		xvel += xacc * delta;
+		yvel += yacc * delta;
 		xvel = xvel > xvelmax ? xvelmax : xvel; // correct larger-than-intended velocities
 		yvel = yvel > yvelmax ? yvelmax : yvel;
 		xvel = -xvel > xvelmax ? -xvelmax : xvel; // negative case
 		yvel = -yvel > yvelmax ? -yvelmax : yvel;
-		xpos += xvel*delta;
-		ypos += yvel*delta;
+		xpos += xvel * delta;
+		ypos += yvel * delta;
 	}
 	
 	/**
@@ -210,11 +257,13 @@ public abstract class Entity implements ScreenController{
 	
 	public boolean isCollidedWith(Entity other){
 		// step1
-		if(xpos >= other.xpos && xpos < other.xpos + other.width && ypos >= other.ypos && ypos < other.ypos + other.height){
+		if(xpos >= other.xpos && xpos < other.xpos + other.width
+				&& ypos >= other.ypos && ypos < other.ypos + other.height){
 			return true;
 		}
 		// step2
-		if(other.xpos >= xpos && other.xpos < xpos + width && other.ypos >= ypos && other.ypos < ypos + height){
+		if(other.xpos >= xpos && other.xpos < xpos + width
+				&& other.ypos >= ypos && other.ypos < ypos + height){
 			return true;
 		}
 		return false;
@@ -261,25 +310,6 @@ public abstract class Entity implements ScreenController{
 		return sprite;
 	}
 	
-	/**
-	 * To be accessed by other entities, perhaps? BE CAREFUL.
-	 * 
-	 * @param nx
-	 */
-	public void setX(int nx){
-		xpos = nx;
-	}
-	
-	/**
-	 * To be accessed by other entities, perhaps? BE CAREFUL.
-	 * 
-	 * @param ny
-	 */
-	public void setY(int ny){
-		ypos = ny;
-	}
-	
-	@Override
 	public final void draw(int sx, int sy, Screen s){
 		sprite.draw(sx, sy, s);
 	}

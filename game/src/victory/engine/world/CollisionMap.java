@@ -1,4 +1,4 @@
-package victory.engine;
+package victory.engine.world;
 
 import java.io.File;
 import java.util.Scanner;
@@ -65,7 +65,7 @@ public class CollisionMap {
 		if(x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT){
 			return !permissions[(int)x + (int)(y * WIDTH)];
 		}
-		return false;
+		return true;
 		
 	}
 	
